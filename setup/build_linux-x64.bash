@@ -22,6 +22,13 @@ NPM_VERSION=$(cat package.json | jq '.version' | sed 's/"//g')"-"$(echo $BUILD_V
 # Update the version in the package.json.
 cat package.json | jq --arg VERSION $NPM_VERSION 'to_entries | map(if .key == "version" then . + {"value": $VERSION} else . end ) | from_entries' > package.json.tmp
 mv package.json.tmp package.json
+
+# Check if Electron is installed
+if ! which electron >/dev/null 2>&1; then
+  echo "Electron not found. Installing Electron..."
+  npm install -g electron@4.0.0
+fi
+
 npm run build-linux
 retVal=$?
 if [[ retVal -ne 0 ]] ; then

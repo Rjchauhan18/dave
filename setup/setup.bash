@@ -142,14 +142,24 @@ echo "Using npm $(npm --version)"
 
 # Install Python dependencies
 if conda env list | grep -q "^dave[ ]\+"; then
-  echo "dave virtual Python environment already exists"
+	echo "dave virtual Python environment already exists"
 else
-  echo "Creating virtual Python environment dave"
-  conda env create -f setup/environment.yml
-  retVal=$?
-  if [[ retVal -ne 0 ]] ; then
-      echo "Failed to create virtual Python environment."
-      return 1
+	echo "Creating virtual Python environment dave"
+	conda env create -f setup/environment.yml
+	retVal=$?
+	if [[ retVal -ne 0 ]] ; then
+			echo "Failed to create virtual Python environment."
+			# Try fixing the issue by adding alternate channels
+			conda config --add channels conda-forge
+			conda config --add channels defaults
+			conda env create -f setup/environment.yml
+			retVal=$?
+			if [[ retVal -ne 0 ]] ; then
+					echo "Failed to create virtual Python environment on second attempt too. Bailing out."
+					return 1
+			fi
+	fi
+fi
 
 # We can try to fix it by deleting the pip cache but the case so far I've seen, deleting the pip cache doens't solve it.
 #      echo "Failed to create virtual Python environment. Deleting pip cache and try again."
@@ -166,9 +176,9 @@ else
 #          echo "Failed to create virtual Python environment on second attempt too. Bailing out."
 #          return 1
 #      fi
-  fi
+#   fi
 
-fi
+# fi
 source activate dave
 
 #Installing Stingray and Astropy Helpers
