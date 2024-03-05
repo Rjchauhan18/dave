@@ -21,10 +21,13 @@ from stingray.utils import excess_variance
 from stingray.modeling import PSDLogLikelihood, PSDPosterior, PSDParEst
 from stingray.simulator import simulator
 from stingray.pulse.search import z_n_search, epoch_folding_search, phaseogram, search_best_peaks
-from stingray.pulse.pulsar import z2_n_detection_level
-from astropy.stats import LombScargle, poisson_conf_interval
+# from stingray.pulse.pulsar import z2_n_detection_level
+from astropy.stats import  poisson_conf_interval
+from astropy.timeseries import LombScargle
+# from astropy.stats import Lomb, poisson_conf_interval
 from config import CONFIG
 import sys
+from stingray.pulse.pulsar import fold_events
 
 
 # get_dataset_schema: Returns the schema of a dataset of given file
@@ -1859,7 +1862,7 @@ def get_pulse_search(src_destination, bck_destination, gti_destination, filters,
             freq, zstat = epoch_folding_search(time_data, frequencies, nbin=nbin, \
                                     segment_size=segment_size, weights=weights)
 
-        z_detlev = z2_n_detection_level(n=1, epsilon=0.001, ntrial=len(freq))
+        z_detlev = fold_events(time_data, frequencies, nbin=nbin, nharm=nharm, segment_size=segment_size, weights=weights)
         cand_freqs_z, cand_stat_z = search_best_peaks(freq, zstat, z_detlev)
 
     except:

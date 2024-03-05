@@ -204,7 +204,7 @@ if [ ! -e $STINGRAY_FOLDER ]; then
 
 	#Install stingray libraries
         conda install statsmodels matplotlib astropy numpy numba emcee corner scipy h5py
-	pip install -r requirements.txt
+	pip install -r dave/requirements.txt
 	retVal=$?
 	if [[ retVal -ne 0 ]] ; then
 	 	echo "Failed to install Stingray dependencies"

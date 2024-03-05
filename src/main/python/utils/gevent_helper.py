@@ -1,12 +1,13 @@
+import gevent
+from gevent.pywsgi import WSGIServer
+from gevent.queue import Queue
+from flask import Response
+
 # from: http://flask.pocoo.org/snippets/116/
 #
 # THIS FILE IS FOR SENDING EVENTS TO DAVE GUI LOGGER
 #
 # Make sure your gevent version is >= 1.0
-import gevent
-from gevent.wsgi import WSGIServer
-from gevent.queue import Queue
-from flask import Response
 
 subscriptions = []
 
@@ -41,7 +42,7 @@ def start(server_port, app):
         pass
     finally:
         # Clean-up server (close socket, etc.)
-        server.close()
+        server.stop()
 
 
 def subscribe():
@@ -64,4 +65,4 @@ def publish(message):
         for sub in subscriptions[:]:
             sub.put(message)
 
-    gevent.spawn(notify(message))
+    gevent.spawn(notify, message)
